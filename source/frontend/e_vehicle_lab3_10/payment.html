@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - E-Vehicle Share</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+    background-color: #e6f7f1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn-custom {
+    background-color: #8BC34A;
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #C0CA33;
+}
+
+.navbar {
+    background-color: #8BC34A;
+    padding: 10px 20px;
+}
+
+.navbar .nav-link {
+    color: white;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.navbar .nav-link:hover {
+    color: #CDDC39;
+}
+        .payment-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fff;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        }
+        .vehicle-info {
+            display: flex;
+            align-items: center;
+        }
+        .vehicle-info img {
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+        }
+        .pay-button {
+            background-color: #ffcccc;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="rent.html">Rent</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="order.html">Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-5">
+    <h2 class="text-left mb-4">Payment</h2>
+    <div class="container mt-5">
+      <div class="payment-card">
+          <div class="vehicle-info">
+              <img src="./images/1.png" alt="Tesla Model 3">
+              <div>
+                  <h5>Tesla Model 3</h5>
+                  <p>Used time: 2h</p>
+                  <p>Need to pay: $200</p>
+              </div>
+          </div>
+          <button type="submit" class="pay-button btn-success btn" onclick="window.location.href='finished_to_order.html'">Pay</button>
+      </div>
+  </div>
+
+  <!-- 引入Bootstrap的JS库 -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

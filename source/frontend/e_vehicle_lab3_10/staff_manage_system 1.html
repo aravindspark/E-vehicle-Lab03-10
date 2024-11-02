@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Dashboard</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.3.3/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <style>
+        body {
+    background-color: #e6f7f1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.btn-custom {
+    background-color: #8BC34A;
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #C0CA33;
+}
+
+.navbar {
+    background-color: #8BC34A;
+    padding: 10px 20px;
+}
+
+.navbar .nav-link {
+    color: white;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.navbar .nav-link:hover {
+    color: #CDDC39;
+}
+    #map, #carouselExampleIndicators, .vehicle-container {
+        height: 400px; 
+        width: 100%;
+        max-width: 1200px; 
+        margin: 0 auto; 
+    }
+    .btn-rented {
+      background-color: red;
+      color: white;
+      cursor: not-allowed;
+    }
+
+    .battery {
+      display: inline-block;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .battery-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+
+    .battery-low {
+      color: red;
+    }
+
+    .battery-normal {
+      color: green;
+    }
+
+    .rent-section {
+      background-color: #fce4ec;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .rent-section h3 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .rent-section .form-select {
+      display: inline-block;
+      width: auto;
+      margin: 0 10px;
+    }
+
+    .rent-section label {
+      font-size: 16px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .rent-section button {
+      background-color: #f48fb1;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .rent-section button:hover {
+      background-color: #ec407a;
+    }
+    .vehicle-item {
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      text-align: center;
+      width: calc(33% - 10px);
+    }
+
+    /* 种类按钮样式 */
+    .category-buttons {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      gap: 10px;
+    }
+    .category-button {
+      padding: 8px 15px;
+      border-radius: 20px;
+      background-color: #fce4ec;
+      color: black;
+      border: none;
+      cursor: pointer;
+    }
+    .category-button.active {
+      background-color: black;
+      color: white;
+    }
+    .vehicle-display {
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+    .vehicle-display img {
+      width: 100%;
+      height: auto;
+    }
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="rent.html">Rent</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="order.html">Order</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <div class="container">
+        <div class="container mt-5">
+            <div class="row">
+              <div class="col-md-6 mx-auto">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">E-Vehicle</h5>
+                    <p class="card-text">data visualisations</p>
+                    <select id="ebike-select" class="form-select mb-3">
+                      <option value="mountain-bike">money earned per rental location</option>
+                      <option value="road-bike">number of cars per locations</option>
+                      <option value="city-bike">most reported broken/repaired car</option>
+                      <option value="city-bike">most used rental location</option>
+                      <option value="city-bike">most rented vehicle type</option>
+                      <option value="city-bike">most popular rental location</option>
+                      <option value="city-bike">how long are vehicles rented on average</option>
+                      <option value="city-bike">how many users</option>
+                    </select>
+                    <div class="container">
+                        <label for="datetime">Select Date and Time:</label>
+                        <input type="datetime-local" id="datetime" name="datetime" required>
+                        <p></p>
+                        <label for="datetime">Select Date and Time:</label>
+                        <input type="datetime-local" id="datetime" name="datetime" required>
+                        <p id="message"></p>
+                    </div>
+                    <label>
+                        <input type="radio" name="preference" value="option1">
+                        Hourly
+                    </label>
+                    <label>
+                        <input type="radio" name="preference" value="option2">
+                        Daily
+                    </label>
+                    <label>
+                        <input type="radio" name="preference" value="option3">
+                        Weekly
+                    </label><br>
+                    <a href="#" id="ebike-btn" class="btn btn-primary mt-4">show!</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="container mt-5" style="border-style:solid;">
+          <img src="./images/1.png" alt="Tesla Model 1" class="vehicle-image">
+            <h5>Tesla Model 1</h5>
+          </div>
+    </div>
+
+    <script src="./js/scripts.js"></script>
+</body>
+</html>
