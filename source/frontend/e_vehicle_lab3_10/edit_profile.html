@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - E-Vehicle Share</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      font-family: Arial, sans-serif;
+    }
+
+    .btn-custom {
+      background-color: #8BC34A;
+      border: none;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+      background-color: #CDDC39;
+    }
+
+    .navbar {
+      background-color: #8BC34A;
+    }
+
+    .navbar .nav-link {
+      color: white;
+    }
+
+    .navbar .nav-link:hover {
+      color: #CDDC39;
+    }
+
+    .profile-title {
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="index.html">E-Vehicle Share</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4 profile-title">Edit Your Profile</h2>
+    <form id="profileForm" enctype="multipart/form-data">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+
+          <div class="mb-3 text-center">
+            <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar Preview">
+            <input type="file" class="form-control" id="avatar" accept="image/*" onchange="previewAvatar(event)">
+          </div>
+
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" value="">
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" value="">
+          </div>
+
+          <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" value="">
+          </div>
+
+          <div class="mb-3">
+            <label for="birthday" class="form-label">Birthday</label>
+            <input type="date" class="form-control" id="birthday" value="">
+          </div>
+
+          <button type="button" class="btn btn-primary w-100 btn-custom" onclick="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+
+    window.onload = function() {
+      fetch('/api/profile')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('avatarPreview').src = data.avatar;
+          document.getElementById('name').value = data.name;
+          document.getElementById('email').value = data.email;
+          document.getElementById('location').value = data.location;
+          document.getElementById('birthday').value = data.birthday;
+        })
+        .catch(error => console.error('Error loading profile data:', error));
+    };
+
+    function previewAvatar(event) {
+      var input = event.target;
+      var reader = new FileReader();
+      reader.onload = function(){
+        var dataURL = reader.result;
+        document.getElementById('avatarPreview').src = dataURL;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    function saveProfile() {
+      const profileData = new FormData(document.getElementById('profileForm'));
+      
+      fetch('/api/profile', {
+        method: 'POST',
+        body: profileData
+      })
+      .then(response => response.json())
+      .then(data => alert('Profile updated successfully!'))
+      .catch(error => console.error('Error updating profile:', error));
+    }
+  </script>
+</body>
+</html>

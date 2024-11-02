@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order - Vehicle Rental</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* 页面背景颜色 Page background color */
+    body {
+        background-color: #e6f7f1;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* 容器间距 Container spacing */
+    .container {
+        margin-top: 50px;
+    }
+
+    /* 电池状态样式 Battery status style */
+    .battery {
+        display: inline-block;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    .battery-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+    }
+    .battery-low {
+        color: #f44336;
+    }
+    .battery-normal {
+        color: #8BC34A;
+    }
+
+    /* 自定义导航栏样式 Customized navigation bar style */
+    .navbar {
+        background-color: #8BC34A;
+        padding: 10px 20px;
+    }
+    .navbar .nav-link {
+        color: white;
+        font-weight: 500;
+        margin-right: 15px;
+        transition: color 0.3s ease;
+    }
+    .navbar .nav-link:hover {
+        color: #CDDC39;
+    }
+
+    /* 主要卡片样式 Main card style */
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 车辆信息和订单详情样式 Vehicle information and order details style */
+    .order-details {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .order-summary {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .order-summary h4, .order-summary p {
+        margin-bottom: 10px;
+    }
+
+    /* 返回按钮样式 Back button style */
+    .back-button {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    /* 自定义结算按钮 Custom checkout button */
+    .checkout-btn {
+        background-color: #8BC34A;
+        color: white;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+    .checkout-btn:hover {
+        background-color: #C0CA33;
+    }
+</style>
+
+</head>
+<body>
+<!-- 导航栏 navigation bar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a class="nav-link" href="rent.html">Rent</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="order.html">Order</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="profile.html">Report</a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
+
+  <!-- 返回按钮 return push-button-->
+  <div class="container mt-3">
+    <span class="back-button">&larr; return</span>
+  </div>
+
+  <!-- Main -->
+  <div class="container mt-3">
+    <div class="row">
+      <!-- 左侧车辆信息 Left side vehicle information-->
+      <div class="col-md-8">
+        <div class="card order-details">
+          <div class="card-body">
+            <h4 class="card-title">Vehicle Information</h4>
+            <img src="images/B1.jpg" alt="Vehicle" class="img-fluid mb-3" style="max-width: 150px; height: auto;">
+            <p class="card-text">
+              <strong>Vehicle Type:</strong> E-Bike<br>
+              <strong>Rental Start Time:</strong> 2024-10-23 14:00<br>
+              <strong>Pickup Location:</strong> West End<br>
+              <strong>Duration:</strong> 4.5 hours<br>
+              <strong>Total Cost:</strong> £22.50<br>
+              <!-- battery -->
+              <strong>Battery Level:</strong> <span class="battery" id="battery-status"> <span class="battery-normal">73%</span></span>
+            </p>
+            <h5 class="mt-4">current position</h5>
+            <div id="map" style="height: 300px;"></div>
+            <p class="mt-2">Vehicle problem?<a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">Click here for feedback</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- right side -->
+      <div class="col-md-4">
+        <div class="order-summary">
+          <h4>Order details</h4>
+          <p><strong>Unit price per hour:</strong> £5.00</p>
+          <p><strong>discounts:</strong> £0.00</p>
+          <p><strong>Hours of use</strong> 4.5h</p>
+          <hr>
+          <h5><strong>Total:</strong> £22.50</h5>
+          <a href="payment.html" class="btn btn-primary mt-3 checkout-btn">Check out</a>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- feedback -->
+  <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="feedbackModalLabel">Vehicle problem feedback</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="feedbackForm">
+            <div class="mb-3">
+              <label for="issueDescription" class="form-label">Describing problems</label>
+              <textarea class="form-control" id="issueDescription" rows="3" placeholder="Please describe the problem..."></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" id="submitFeedback">submit feedback</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"></script>
+  <script>
+    function initMap() {
+      const glasgow = { lat: 55.8721, lng: -4.2882 };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: glasgow
+      });
+
+      const marker = new google.maps.Marker({
+        position: glasgow,
+        map: map,
+        title: "Current Location"
+      });
+    }
+
+    window.onload = function() {
+      initMap();
+      updateBatteryStatus();
+    };
+
+    function updateBatteryStatus() {
+      const batteryLevel = 73; // 假设固定电量 Assumed constant charge
+      const batteryElement = document.getElementById("battery-status");
+      const batteryClass = batteryLevel <= 20 ? "battery-low" : "battery-normal";
+      batteryElement.className = batteryClass;
+      batteryElement.innerText = `${batteryLevel}%`;
+    }
+
+    // 处理反馈提交 Process feedback submission
+    document.getElementById("submitFeedback").addEventListener("click", function() {
+      const issueDescription = document.getElementById("issueDescription").value;
+      if (issueDescription.trim() === "") {
+        alert("Describe the problem before submitting feedback!");
+        return;
+      }
+
+      // 反馈处理逻辑Feedback processing logic
+      alert("Feedback has been submitted, thank you for your feedback!");
+      document.getElementById("feedbackForm").reset();
+      const feedbackModal = bootstrap.Modal.getInstance(document.getElementById("feedbackModal"));
+      feedbackModal.hide();
+    });
+  </script>
+</body>
+</html>

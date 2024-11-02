@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - E-Vehicle Share</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      font-family: Arial, sans-serif;
+    }
+
+    .btn-custom {
+      background-color: #8BC34A;
+      border: none;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+      background-color: #CDDC39;
+    }
+
+    .navbar {
+      background-color: #8BC34A;
+    }
+
+    .navbar .nav-link {
+      color: white;
+    }
+
+    .navbar .nav-link:hover {
+      color: #CDDC39;
+    }
+
+    .profile-title {
+      color: #333;
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .profile-info {
+      font-size: 1.1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="index.html">E-Vehicle Share</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4 profile-title">This is me!</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+
+        <div class="mb-4 text-center">
+          <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar">
+        </div>
+
+        <div class="profile-info mb-3">
+          <strong>Name:</strong> <span id="displayName"></span>
+        </div>
+
+        <div class="profile-info mb-3">
+          <strong>Email:</strong> <span id="displayEmail"></span>
+        </div>
+
+        <div class="profile-info mb-3">
+          <strong>Location:</strong> <span id="displayLocation"></span>
+        </div>
+
+        <div class="profile-info mb-3">
+          <strong>Birthday:</strong> <span id="displayBirthday"></span>
+        </div>
+
+        <div class="text-center">
+          <a href="edit_profile.html" class="btn btn-primary btn-custom">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+  
+    window.onload = function() {
+      fetch('/api/profile')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('avatarPreview').src = data.avatar;
+          document.getElementById('displayName').innerText = data.name;
+          document.getElementById('displayEmail').innerText = data.email;
+          document.getElementById('displayLocation').innerText = data.location;
+          document.getElementById('displayBirthday').innerText = data.birthday;
+        })
+        .catch(error => console.error('Error loading profile data:', error));
+    };
+  </script>
+</body>
+</html>
