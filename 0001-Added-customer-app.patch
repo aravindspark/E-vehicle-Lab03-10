@@ -1,0 +1,470 @@
+From 2dd0f1f6b8141f6854fa7aa80e4c645ad4ba3227 Mon Sep 17 00:00:00 2001
+From: Aravindhan Ashok <aravindsparkstar@gmail.com>
+Date: Mon, 4 Nov 2024 13:21:45 +0000
+Subject: [PATCH] Added customer app, upaded the user modal
+
+Signed-off-by: Aravindhan Ashok <aravindsparkstar@gmail.com>
+---
+ .../e_vehicle_lab3_10/customer/__init__.py    |  0
+ .../e_vehicle_lab3_10/customer/admin.py       |  3 ++
+ .../e_vehicle_lab3_10/customer/apps.py        |  6 +++
+ .../customer/migrations/__init__.py           |  0
+ .../e_vehicle_lab3_10/customer/models.py      |  3 ++
+ .../e_vehicle_lab3_10/customer/serializers.py | 13 ++++++
+ .../e_vehicle_lab3_10/customer/tests.py       |  3 ++
+ .../e_vehicle_lab3_10/customer/urls.py        |  6 +++
+ .../e_vehicle_lab3_10/customer/views.py       | 41 +++++++++++++++++++
+ .../e_vehicle_lab3_10/settings.py             |  8 +++-
+ .../e_vehicle_lab3_10/urls.py                 |  5 +++
+ .../backend/e_vehicle_lab3_10/user/admin.py   |  8 ++--
+ .../user/migrations/0001_initial.py           |  2 +-
+ .../migrations/0003_customuser_location.py    | 18 ++++++++
+ .../migrations/0004_auto_20241104_1253.py     | 36 ++++++++++++++++
+ .../backend/e_vehicle_lab3_10/user/models.py  | 15 ++++---
+ .../migrations/0003_auto_20241103_1943.py     | 31 ++++++++++++++
+ .../migrations/0004_auto_20241104_1253.py     | 24 +++++++++++
+ .../vehicle_operator/views.py                 |  2 +-
+ .../frontend/e_vehicle_lab3_10/profile.html   |  8 ++--
+ 20 files changed, 213 insertions(+), 19 deletions(-)
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/__init__.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/admin.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/apps.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/migrations/__init__.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/models.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/serializers.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/tests.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/urls.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/customer/views.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/user/migrations/0003_customuser_location.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/user/migrations/0004_auto_20241104_1253.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0003_auto_20241103_1943.py
+ create mode 100644 source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0004_auto_20241104_1253.py
+
+diff --git a/source/backend/e_vehicle_lab3_10/customer/__init__.py b/source/backend/e_vehicle_lab3_10/customer/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/source/backend/e_vehicle_lab3_10/customer/admin.py b/source/backend/e_vehicle_lab3_10/customer/admin.py
+new file mode 100644
+index 0000000..8c38f3f
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/admin.py
+@@ -0,0 +1,3 @@
++from django.contrib import admin
++
++# Register your models here.
+diff --git a/source/backend/e_vehicle_lab3_10/customer/apps.py b/source/backend/e_vehicle_lab3_10/customer/apps.py
+new file mode 100644
+index 0000000..ac9e398
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/apps.py
+@@ -0,0 +1,6 @@
++from django.apps import AppConfig
++
++
++class CustomerConfig(AppConfig):
++    default_auto_field = 'django.db.models.BigAutoField'
++    name = 'customer'
+diff --git a/source/backend/e_vehicle_lab3_10/customer/migrations/__init__.py b/source/backend/e_vehicle_lab3_10/customer/migrations/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/source/backend/e_vehicle_lab3_10/customer/models.py b/source/backend/e_vehicle_lab3_10/customer/models.py
+new file mode 100644
+index 0000000..71a8362
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/models.py
+@@ -0,0 +1,3 @@
++from django.db import models
++
++# Create your models here.
+diff --git a/source/backend/e_vehicle_lab3_10/customer/serializers.py b/source/backend/e_vehicle_lab3_10/customer/serializers.py
+new file mode 100644
+index 0000000..6ba529d
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/serializers.py
+@@ -0,0 +1,13 @@
++from rest_framework import serializers
++from django.contrib.auth import get_user_model
++from user.models import CustomUser
++
++User = get_user_model()
++
++class ProfileSerializer(serializers.ModelSerializer):
++    class Meta:
++        model = CustomUser
++        fields = '__all__'
++
++    def __str__(self) -> str:
++        return self.name
+\ No newline at end of file
+diff --git a/source/backend/e_vehicle_lab3_10/customer/tests.py b/source/backend/e_vehicle_lab3_10/customer/tests.py
+new file mode 100644
+index 0000000..7ce503c
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/tests.py
+@@ -0,0 +1,3 @@
++from django.test import TestCase
++
++# Create your tests here.
+diff --git a/source/backend/e_vehicle_lab3_10/customer/urls.py b/source/backend/e_vehicle_lab3_10/customer/urls.py
+new file mode 100644
+index 0000000..b437781
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/urls.py
+@@ -0,0 +1,6 @@
++from django.urls import path
++from .import views
++
++urlpatterns = [
++    path('profile/<int:pk>',views.user_profile),
++]
+\ No newline at end of file
+diff --git a/source/backend/e_vehicle_lab3_10/customer/views.py b/source/backend/e_vehicle_lab3_10/customer/views.py
+new file mode 100644
+index 0000000..8a69a9f
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/customer/views.py
+@@ -0,0 +1,41 @@
++from django.shortcuts import render, HttpResponse
++from django.conf import settings
++from django.http import JsonResponse
++
++from rest_framework.response import Response
++from rest_framework.decorators import api_view
++from rest_framework import status
++from user.models import CustomUser
++from .serializers import ProfileSerializer
++
++@api_view(['GET','PUT'])
++def user_profile(request, pk=None):
++    if pk:
++        try:
++            users = CustomUser.objects.get(id=pk, user_type="customer")
++            
++            respose_data = {
++            "firtname" : users.firstname,
++            "middlename": users.middlename,
++            "lastname": users.lastname,
++            "email" : users.email,
++            "birth_date" : users.birth_date
++            }
++
++        except CustomUser.DoesNotExist:
++            return Response(
++                    {f"message: User not found, user id is {pk}"},
++                    status=status.HTTP_404_NOT_FOUND,
++                )
++        if request.method == 'GET':
++            serializer = ProfileSerializer(users, many=True)
++            return JsonResponse(respose_data)
++        elif request.method == 'POST':
++            serializer = ProfileSerializer(data=request.data)
++            if serializer.is_valid():
++                serializer.save()
++                return Response(serializer.data, status=status.HTTP_201_CREATED)
++        else:
++            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
++    else:
++        return Response(f"Nothing to look for", status=status.HTTP_404_NOT_FOUND)
+diff --git a/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/settings.py b/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/settings.py
+index 6f90322..13a4b4a 100644
+--- a/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/settings.py
++++ b/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/settings.py
+@@ -10,6 +10,7 @@ For the full list of settings and their values, see
+ https://docs.djangoproject.com/en/5.1/ref/settings/
+ """
+ 
++import os
+ from pathlib import Path
+ from datetime import timedelta
+ 
+@@ -47,6 +48,7 @@ INSTALLED_APPS = [
+     'rest_framework_simplejwt.token_blacklist',
+     "vehicle_operator",
+     "user",
++    'customer'
+ ]
+ 
+ MIDDLEWARE = [
+@@ -152,4 +154,8 @@ SIMPLE_JWT = {
+     'BLACKLIST_AFTER_ROTATION': True,               # Enable blacklist for the refresh token after rotation
+ }
+ 
+-execute_from_command_line(['manage.py', 'runserver', '0.0.0.0:8000'])
+\ No newline at end of file
++# execute_from_command_line(['manage.py', 'runserver', '127.0.0.1:8000'])
++
++# #media files
++# MEDIA_URL = 'media/'
++# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+\ No newline at end of file
+diff --git a/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/urls.py b/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/urls.py
+index 58baae8..6f81ee6 100644
+--- a/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/urls.py
++++ b/source/backend/e_vehicle_lab3_10/e_vehicle_lab3_10/urls.py
+@@ -17,9 +17,14 @@ Including another URLconf
+ 
+ from django.contrib import admin
+ from django.urls import include, path
++from django.conf.urls.static import static
++from django.conf import settings
+ 
+ urlpatterns = [
+     path("admin/", admin.site.urls),
+     path("api/", include("vehicle_operator.urls")),
+     path("api/users/", include("user.urls")),
++    path("api/customer/", include("customer.urls")),
+ ]
++
++# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+\ No newline at end of file
+diff --git a/source/backend/e_vehicle_lab3_10/user/admin.py b/source/backend/e_vehicle_lab3_10/user/admin.py
+index 30c686e..82cc51a 100644
+--- a/source/backend/e_vehicle_lab3_10/user/admin.py
++++ b/source/backend/e_vehicle_lab3_10/user/admin.py
+@@ -5,19 +5,19 @@ from .models import CustomUser
+ 
+ class CustomUserAdmin(UserAdmin):
+     # Fields to display in the admin list view
+-    list_display = ('email', 'firstname', 'lastname', 'user_type', 'is_staff', 'is_active')
++    list_display = ('email', 'firstname', 'lastname', 'user_type',)
+     # Fields that can be directly edited in the list view
+-    list_editable = ('is_active', 'is_staff')
++    # list_editable = ('is_staff')
+     # Fields to search in the search bar
+     search_fields = ('email', 'firstname', 'lastname', 'phone_number')
+     # Fields for filtering the list
+-    list_filter = ('is_active', 'is_staff', 'user_type')
++    list_filter = ('user_type',)
+ 
+     # Define field groups for the admin detail view
+     fieldsets = (
+         (None, {'fields': ('email', 'password')}),
+         ('Personal Info', {'fields': ('firstname', 'lastname', 'midname', 'phone_number', 'birth_date')}),
+-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_type')}),
++        ('Permissions', {'fields': ('is_superuser', 'user_type')}),
+         ('Important Dates', {'fields': ('last_login',)}),
+     )
+ 
+diff --git a/source/backend/e_vehicle_lab3_10/user/migrations/0001_initial.py b/source/backend/e_vehicle_lab3_10/user/migrations/0001_initial.py
+index 0897127..311cbc8 100644
+--- a/source/backend/e_vehicle_lab3_10/user/migrations/0001_initial.py
++++ b/source/backend/e_vehicle_lab3_10/user/migrations/0001_initial.py
+@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
+                 ('phone_number', models.CharField(blank=True, max_length=15, null=True)),
+                 ('birth_date', models.DateField(blank=True, null=True)),
+                 ('is_active', models.BooleanField(default=True)),
+-                ('is_staff', models.BooleanField(default=False)),
++                # ('is_staff', models.BooleanField(default=False)),
+                 ('user_type', models.CharField(choices=[('user', 'User'), ('operator', 'Operator'), ('manager', 'Manager')], default='user', max_length=10)),
+                 ('is_deleted', models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False)),
+                 ('create_time', models.DateTimeField(auto_now_add=True)),
+diff --git a/source/backend/e_vehicle_lab3_10/user/migrations/0003_customuser_location.py b/source/backend/e_vehicle_lab3_10/user/migrations/0003_customuser_location.py
+new file mode 100644
+index 0000000..7c03e2f
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/user/migrations/0003_customuser_location.py
+@@ -0,0 +1,18 @@
++# Generated by Django 3.2.25 on 2024-11-03 22:18
++
++from django.db import migrations, models
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('user', '0002_alter_customuser_user_type'),
++    ]
++
++    operations = [
++        migrations.AddField(
++            model_name='customuser',
++            name='location',
++            field=models.CharField(default='G12 8DD', max_length=10),
++        ),
++    ]
+diff --git a/source/backend/e_vehicle_lab3_10/user/migrations/0004_auto_20241104_1253.py b/source/backend/e_vehicle_lab3_10/user/migrations/0004_auto_20241104_1253.py
+new file mode 100644
+index 0000000..df2a0ff
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/user/migrations/0004_auto_20241104_1253.py
+@@ -0,0 +1,36 @@
++# Generated by Django 3.2.25 on 2024-11-04 12:53
++
++from django.db import migrations, models
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('user', '0003_customuser_location'),
++    ]
++
++    operations = [
++        migrations.RenameField(
++            model_name='customuser',
++            old_name='create_time',
++            new_name='creation_time',
++        ),
++        migrations.RenameField(
++            model_name='customuser',
++            old_name='midname',
++            new_name='middlename',
++        ),
++        migrations.RemoveField(
++            model_name='customuser',
++            name='is_active',
++        ),
++        migrations.RemoveField(
++            model_name='customuser',
++            name='location',
++        ),
++        migrations.AddField(
++            model_name='customuser',
++            name='gender',
++            field=models.CharField(blank=True, default='', max_length=10),
++        ),
++    ]
+diff --git a/source/backend/e_vehicle_lab3_10/user/models.py b/source/backend/e_vehicle_lab3_10/user/models.py
+index ccf261b..80f912f 100644
+--- a/source/backend/e_vehicle_lab3_10/user/models.py
++++ b/source/backend/e_vehicle_lab3_10/user/models.py
+@@ -14,11 +14,11 @@ class CustomUserManager(BaseUserManager):
+         return user
+ 
+     def create_superuser(self, email, password=None, **extra_fields):
+-        extra_fields.setdefault('is_staff', True)
++        extra_fields.setdefault('user_type', 'manager')
+         extra_fields.setdefault('is_superuser', True)
+ 
+-        if extra_fields.get('is_staff') is not True:
+-            raise ValueError('Superuser must have is_staff=True.')
++        if extra_fields.get('user_type') == 'manager':
++            raise ValueError('Superuser must have user_type=manager.')
+         if extra_fields.get('is_superuser') is not True:
+             raise ValueError('Superuser must have is_superuser=True.')
+ 
+@@ -34,14 +34,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
+     email = models.EmailField(unique=True)
+     firstname = models.CharField(max_length=30, default='', blank=True)
+     lastname = models.CharField(max_length=30, default='', blank=True)
+-    midname = models.CharField(max_length=30, default='', blank=True)
+-    phone_number = models.CharField(max_length=15, blank=True, null=True)
++    middlename = models.CharField(max_length=30, default='', blank=True)
+     birth_date = models.DateField(blank=True, null=True)
+-    is_active = models.BooleanField(default=True)
+-    is_staff = models.BooleanField(default=False)
++    gender = models.CharField(max_length=10, default='',  blank=True)
+     user_type = models.CharField(max_length=10, default="customer", choices=USER_TYPE_CHOICES)
++    phone_number = models.CharField(max_length=15, blank=True, null=True)
+     is_deleted = models.BooleanField(default=False, choices=[(True, "Yes"), (False, "No")])
+-    create_time = models.DateTimeField(auto_now_add=True)
++    creation_time = models.DateTimeField(auto_now_add=True)
+     objects = CustomUserManager()
+     USERNAME_FIELD = 'email'
+     # REQUIRED_FIELDS = ['first_name', 'last_name']
+diff --git a/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0003_auto_20241103_1943.py b/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0003_auto_20241103_1943.py
+new file mode 100644
+index 0000000..cb6db9d
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0003_auto_20241103_1943.py
+@@ -0,0 +1,31 @@
++# Generated by Django 3.2.25 on 2024-11-03 19:43
++
++from django.db import migrations, models
++import django.db.models.deletion
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('vehicle_operator', '0002_alter_vehicle_operator_id'),
++    ]
++
++    operations = [
++        migrations.CreateModel(
++            name='User',
++            fields=[
++                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
++                ('name', models.CharField(max_length=100)),
++                ('email', models.CharField(max_length=200)),
++                ('location', models.CharField(max_length=10)),
++                ('dob', models.DateField()),
++                ('avatar', models.ImageField(blank=True, default='default.png', upload_to='')),
++                ('created', models.DateTimeField(auto_now_add=True)),
++            ],
++        ),
++        migrations.AlterField(
++            model_name='vehicle',
++            name='operator_id',
++            field=models.ForeignKey(limit_choices_to={'user_type': 'operator'}, null=True, on_delete=django.db.models.deletion.SET_NULL, to='vehicle_operator.user'),
++        ),
++    ]
+diff --git a/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0004_auto_20241104_1253.py b/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0004_auto_20241104_1253.py
+new file mode 100644
+index 0000000..884eb10
+--- /dev/null
++++ b/source/backend/e_vehicle_lab3_10/vehicle_operator/migrations/0004_auto_20241104_1253.py
+@@ -0,0 +1,24 @@
++# Generated by Django 3.2.25 on 2024-11-04 12:53
++
++from django.conf import settings
++from django.db import migrations, models
++import django.db.models.deletion
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
++        ('vehicle_operator', '0003_auto_20241103_1943'),
++    ]
++
++    operations = [
++        migrations.AlterField(
++            model_name='vehicle',
++            name='operator_id',
++            field=models.ForeignKey(limit_choices_to={'user_type': 'operator'}, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
++        ),
++        migrations.DeleteModel(
++            name='User',
++        ),
++    ]
+diff --git a/source/backend/e_vehicle_lab3_10/vehicle_operator/views.py b/source/backend/e_vehicle_lab3_10/vehicle_operator/views.py
+index 562dbc2..13597fb 100644
+--- a/source/backend/e_vehicle_lab3_10/vehicle_operator/views.py
++++ b/source/backend/e_vehicle_lab3_10/vehicle_operator/views.py
+@@ -11,7 +11,7 @@ from .serializer import (
+     VehicleStatusSerializer,
+     VehicleTypeSerializer,
+ )
+-import requests
++# import requests
+ 
+ gm_geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"
+ User = get_user_model()
+diff --git a/source/frontend/e_vehicle_lab3_10/profile.html b/source/frontend/e_vehicle_lab3_10/profile.html
+index 92b50db..6f46662 100644
+--- a/source/frontend/e_vehicle_lab3_10/profile.html
++++ b/source/frontend/e_vehicle_lab3_10/profile.html
+@@ -97,14 +97,14 @@
+   <script>
+   
+     window.onload = function() {
+-      fetch('/api/profile')
++      fetch('http://127.0.0.1:8000/api/customer/profile/2')
+         .then(response => response.json())
+         .then(data => {
+-          document.getElementById('avatarPreview').src = data.avatar;
+-          document.getElementById('displayName').innerText = data.name;
++          // document.getElementById('avatarPreview').src = data.avatar;
++          document.getElementById('displayName').innerText = data.fullName;
+           document.getElementById('displayEmail').innerText = data.email;
+           document.getElementById('displayLocation').innerText = data.location;
+-          document.getElementById('displayBirthday').innerText = data.birthday;
++          document.getElementById('displayBirthday').innerText = data.dob;
+         })
+         .catch(error => console.error('Error loading profile data:', error));
+     };
+-- 
+2.46.2.windows.1
+
