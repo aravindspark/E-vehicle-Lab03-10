@@ -59,7 +59,24 @@
           margin-top: 65%;
           margin-bottom: 5%;
         }
+        .image{
+          width: 100px;
+          height: 100px;
+          margin-left: 5%;
+          margin-top: 3%;
+        }
   </style>
+  <script>
+    function finishOrder(button) {
+      button.innerText = "Order Finished";
+      button.classList.remove("btn-success");
+      button.classList.add("btn-secondary"); 
+      button.disabled = true; 
+  }
+    function back1(button){
+      window.location.href = './index.html';
+    }
+  </script>
 </head>
 <body>
 
@@ -91,49 +108,78 @@
   <div class="container mt-5">
     
     <form>
-      <div class="row justify-content-left" style="border-style:solid">
-        <div class="col-md-6" id="select_pay">
-          <div id="E-Vehicle_picture" class="container mt-4 vehicle-container">
-            <img src="./images/1.png" class="img-fluid mb-4" alt="user" height="20%" width="20%">
-            <div class="vehicle-info">
-              <h3>Tesla Model 3</h3>
-              <p>Price per hour: $100</p>
-              <p>Battery Status: 85%</p>
-              <p>Location: Downtown Station</p>
+      <div class="container mt-4">
+          <div class="row justify-content-left">
+              <!-- 车辆信息卡片 -->
+              <div class="col-md-6" id="select_pay">
+                  <div class="card">
+                      <img src="./images/1.png" class="card-img-top image" alt="user">
+                      <div class="card-body">
+                          <h5 id="vehicle-name">Tesla Model 3</h5>
+                          <p id="used-time"></p>
+                          <p id="need-to-pay"></p>
+                          <p id="discount"></p>
+                          <p id="unit_price"></p>
+                          <p id="battery"></p>
+                          <h5 class="text-left mb-4">Select a way to pay</h5>
+                          <div class="form-check mb-3">
+                              <input class="form-check-input" type="radio" name="paymentOption" id="balance" checked>
+                              <label class="form-check-label" for="balance">
+                                  Use balance (money in your account)
+                              </label>
+                          </div>
+                          <div class="form-check mb-3">
+                              <input class="form-check-input" type="radio" name="paymentOption" id="creditCard">
+                              <label class="form-check-label" for="creditCard">
+                                  Use credit card
+                              </label>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-6" id="detail_pay">
+                  <div class="card">
+                      <div class="card-body">
+                          <h2 id="totalpay"></h2>
+                          <p>Use Hour: 3h</p>
+                          <p>Test 1</p>
+                          <p>Use Discount</p>
+                          <p>Right Bottom()</p>
+                      </div>
+                      <div class="card-footer text-right">
+                          <button type="submit" class="btn btn-success w-100" onclick="finishOrder(this)">Confirm Order</button>
+                      </div>
+                      <div class="card-footer text-right">
+                        <button type="button" class="btn btn-success w-100" onclick="back1(this)">Back</button>
+                    </div>
+                  </div>
+              </div>
           </div>
-          </div>
-          <h5 class="text-left mb-4">Selcet a way to pay</h5>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="paymentOption" id="balance" checked>
-            <label class="form-check-label" for="balance">
-              use balance(money in your account)
-            </label>
-          </div>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="paymentOption" id="creditCard">
-            <label class="form-check-label" for="creditCard">
-              use credit card
-            </label>
-          </div>
-          
-        </div>
-        <div class="col-md-6" id="detail_pay" style="border-style:solid" >
-          <div class="container col-md-offset-3" style="border-style:solid">
-            <h2 class=" text-center mt-4"> total_pay:300</h2>
-            <p>use_hour:3h</p>
-            <p>test1</p>
-            <p>use_discount</p>
-            <p>right_bottom()</p>
-          </div>
-          <div style="text-align:right"class="container buttom-top">
-            <button type="submit" class="btn btn-success w-30 margin-right">confirm order</button>
-          </div>
-        </div>
       </div>
-    </form>
+  </form>
+  
   </div>
 
-  <!-- 引入 Bootstrap JS -->
   <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const unitPrice = parseFloat(params.get('unit_price'));
+    const discount = parseFloat(params.get('discount'));
+    const hoursOfUse = parseFloat(params.get('hours'));
+    const total = parseFloat(params.get('total'));
+    const battery = parseFloat(params.get('battery'));
+    console.log('Unit Price:', unitPrice);
+    console.log('Discount:', discount);
+    console.log('Hours of Use:', hoursOfUse);
+    console.log('Total:', total);
+    console.log('battery:', battery);
+    document.getElementById('used-time').innerText = `Used time: ${hoursOfUse}h`;
+    document.getElementById('need-to-pay').innerText = `Need to pay: $${total.toFixed(2)}`;
+    document.getElementById('discount').innerText = `Discount: $${discount.toFixed(2)}`;
+    document.getElementById('unit_price').innerText = `Unit price per hour: $${unitPrice.toFixed(2)}`;
+    document.getElementById('battery').innerText = `the power of the battery: ${battery}%`;
+    document.getElementById('totalpay').innerText = `Need to pay: $${total.toFixed(2)}`;
+  </script>
+  
 </body>
 </html>

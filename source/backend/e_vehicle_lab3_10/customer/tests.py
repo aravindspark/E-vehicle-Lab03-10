@@ -1,3 +1,10 @@
-from django.test import TestCase
+from rest_framework import serializers
 
-# Create your tests here.
+from customer.models import Order
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__"
+
