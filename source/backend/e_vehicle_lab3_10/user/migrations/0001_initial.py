@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('phone_number', models.CharField(blank=True, max_length=15, null=True)),
                 ('birth_date', models.DateField(blank=True, null=True)),
                 ('is_active', models.BooleanField(default=True)),
-                ('is_staff', models.BooleanField(default=False)),
+                # ('is_staff', models.BooleanField(default=False)),
                 ('user_type', models.CharField(choices=[('user', 'User'), ('operator', 'Operator'), ('manager', 'Manager')], default='user', max_length=10)),
                 ('is_deleted', models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False)),
                 ('create_time', models.DateTimeField(auto_now_add=True)),

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     "vehicle_operator",
     "user",
+    'customer'
 ]
 
 MIDDLEWARE = [
@@ -152,4 +154,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,               # Enable blacklist for the refresh token after rotation
 }
 
-execute_from_command_line(['manage.py', 'runserver', '0.0.0.0:8000'])
+# execute_from_command_line(['manage.py', 'runserver', '127.0.0.1:8000'])
+
+# #media files
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
