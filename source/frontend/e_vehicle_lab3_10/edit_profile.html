@@ -6,16 +6,33 @@
   <title>Edit Profile - E-Vehicle Share</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
+    body {
+      display: flex;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+    }
+
+    .profile-container, .image-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px;
+    }
+
+    .profile-container {
+      background-color: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 70px; /* 确保内容在导航栏下方 */
+    }
+
     .avatar {
       width: 150px;
       height: 150px;
       border-radius: 50%;
       object-fit: cover;
-    }
-
-    body {
-      background-color: #f4f6f9;
-      font-family: Arial, sans-serif;
     }
 
     .btn-custom {
@@ -31,74 +48,82 @@
 
     .navbar {
       background-color: #8BC34A;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 15px 20px;
     }
 
-    .navbar .nav-link {
+    .navbar .navbar-brand {
       color: white;
-    }
-
-    .navbar .nav-link:hover {
-      color: #CDDC39;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .profile-title {
       color: #333;
       font-size: 2rem;
       font-weight: bold;
+      text-align: center;
+    }
+
+    .image-container {
+      background-image: url('images/register.jpg'); /* 使用与 login 页面相同的图片路径 */
+      background-size: cover;
+      background-position: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- 导航栏 -->
-  <nav class="navbar navbar-expand-lg navbar-light">
+  <!-- Navbar -->
+  <nav class="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-white" href="index.html">E-Vehicle Share</a>
+      <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <h2 class="text-center mb-4 profile-title">Edit Your Profile</h2>
-    <form id="profileForm" enctype="multipart/form-data">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-
-          <div class="mb-3 text-center">
-            <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar Preview">
-            <input type="file" class="form-control" id="avatar" accept="image/*" onchange="previewAvatar(event)">
-          </div>
-
-          <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" value="">
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" value="">
-          </div>
-
-          <div class="mb-3">
-            <label for="location" class="form-label">Location</label>
-            <input type="text" class="form-control" id="location" value="">
-          </div>
-
-          <div class="mb-3">
-            <label for="birthday" class="form-label">Birthday</label>
-            <input type="date" class="form-control" id="birthday" value="">
-          </div>
-
-          <button type="button" id="save_btn" class="btn btn-primary w-100 btn-custom">Save Changes</button>
+  <!-- Left Side: Edit Profile Form -->
+  <div class="profile-container">
+    <div class="container">
+      <h2 class="profile-title mb-4">Edit Your Profile</h2>
+      <form id="profileForm" enctype="multipart/form-data">
+        <div class="mb-3 text-center">
+          <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar Preview">
+          <input type="file" class="form-control" id="avatar" accept="image/*" onchange="previewAvatar(event)">
         </div>
-      </div>
-    </form>
+
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" value="">
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" value="">
+        </div>
+
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input type="text" class="form-control" id="location" value="">
+        </div>
+
+        <div class="mb-3">
+          <label for="birthday" class="form-label">Birthday</label>
+          <input type="date" class="form-control" id="birthday" value="">
+        </div>
+
+        <button type="button" class="btn btn-primary w-100 btn-custom" onclick="saveProfile()">Save Changes</button>
+      </form>
+    </div>
   </div>
 
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="js/edit_profile.js"></script>
-  <!--
-  <script>
+  <!-- Right Side: Image Background -->
+  <div class="image-container"></div>
 
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
     window.onload = function() {
       fetch('/api/profile')
         .then(response => response.json())
@@ -134,6 +159,5 @@
       .catch(error => console.error('Error updating profile:', error));
     }
   </script>
-  -->
 </body>
 </html>

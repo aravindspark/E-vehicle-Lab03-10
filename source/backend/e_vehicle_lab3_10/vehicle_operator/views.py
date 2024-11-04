@@ -11,7 +11,7 @@ from .serializer import (
     VehicleStatusSerializer,
     VehicleTypeSerializer,
 )
-# import requests
+import requests
 
 gm_geocode_url_address = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"
 gm_geocode_url_latlng = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"

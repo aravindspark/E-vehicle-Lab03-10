@@ -99,18 +99,51 @@
           <div class="vehicle-info">
               <img src="./images/1.png" alt="Tesla Model 3">
               <div>
-                  <h5>Tesla Model 3</h5>
-                  <p>Used time: 2h</p>
-                  <p>Need to pay: $200</p>
-              </div>
+                <h5 id="vehicle-name">Tesla Model 3</h5>
+                <p id="used-time"></p>
+                <p id="need-to-pay"></p>
+                <p id="discount"></p>
+                <p id="unit_price"></p>
+            </div>
           </div>
-          <button type="submit" class="pay-button btn-success btn" onclick="window.location.href='finished_to_order.html'">Pay</button>
+          <button type="button" class="pay-button btn-success btn" onclick="redirectToPayment()">Pay</button>
       </div>
   </div>
 
-  <!-- 引入Bootstrap的JS库 -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    
+    const unitPrice = parseFloat(params.get('unit_price'));
+    const discount = parseFloat(params.get('discount'));
+    const hoursOfUse = parseFloat(params.get('hours'));
+    const total = parseFloat(params.get('total'));
+    const battery = parseFloat(params.get('battery'));
+    console.log('Unit Price:', unitPrice);
+    console.log('Discount:', discount);
+    console.log('Hours of Use:', hoursOfUse);
+    console.log('Total:', total);
+    document.getElementById('used-time').innerText = `Used time: ${hoursOfUse}h`;
+    document.getElementById('need-to-pay').innerText = `Need to pay: $${total.toFixed(2)}`;
+    document.getElementById('discount').innerText = `Discount: $${discount.toFixed(2)}`;
+    document.getElementById('unit-price').innerText = `Unit price per hour: $${unitPrice.toFixed(2)}`;
+    function redirectToPayment() {
+    const queryParams = new URLSearchParams({
+        unit_price: unitPrice,
+        discount: discount,
+        hours: hoursOfUse,
+        total: total,
+        battery:battery
+    });
+    console.log('Unit Price:', unitPrice);
+    console.log('Discount:', discount);
+    console.log('Hours of Use:', hoursOfUse);
+    console.log('Total:', total);
+
+    window.location.href = `./finished_to_order.html?${queryParams.toString()}`;
+}
+  </script>
 </body>
 </html>
