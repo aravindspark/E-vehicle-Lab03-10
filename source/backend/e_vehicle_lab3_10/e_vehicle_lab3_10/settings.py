@@ -152,4 +152,4 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,               # Enable blacklist for the refresh token after rotation
 }
 
-execute_from_command_line(['manage.py', 'runserver', '0.0.0.0:8000'])
+# execute_from_command_line(['manage.py', 'runserver', '0.0.0.0:8000'])
