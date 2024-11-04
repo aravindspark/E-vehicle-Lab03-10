@@ -5,9 +5,9 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     # Fields to display in the admin list view
-    list_display = ('email', 'firstname', 'lastname', 'user_type',)
+    list_display = ('email', 'firstname', 'lastname', 'user_type', 'is_staff', )
     # Fields that can be directly edited in the list view
-    # list_editable = ('is_staff')
+    list_editable = ('is_staff',)
     # Fields to search in the search bar
     search_fields = ('email', 'firstname', 'lastname', 'phone_number')
     # Fields for filtering the list

@@ -6,16 +6,32 @@
   <title>Profile - E-Vehicle Share</title>
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <style>
+    body {
+      display: flex;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+    }
+
+    .profile-container, .image-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px;
+    }
+
+    .profile-container {
+      background-color: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
     .avatar {
       width: 150px;
       height: 150px;
       border-radius: 50%;
       object-fit: cover;
-    }
-
-    body {
-      background-color: #f4f6f9;
-      font-family: Arial, sans-serif;
     }
 
     .btn-custom {
@@ -31,86 +47,95 @@
 
     .navbar {
       background-color: #8BC34A;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      padding: 15px 20px;
     }
 
-    .navbar .nav-link {
+    .navbar .navbar-brand {
       color: white;
-    }
-
-    .navbar .nav-link:hover {
-      color: #CDDC39;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .profile-title {
       color: #333;
       font-size: 2rem;
       font-weight: bold;
+      text-align: center;
     }
 
     .profile-info {
       font-size: 1.1rem;
       color: #555;
+      text-align: left; /* 将内容左对齐 */
     }
+
+    .image-container {
+      background-image: url('images/register.jpg'); /* 使用与login页面相同的图片路径 */
+      background-size: cover;
+      background-position: center;
+    }
+
   </style>
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-light">
+  <!-- Navbar -->
+  <nav class="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-white" href="index.html">E-Vehicle Share</a>
+      <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <h2 class="text-center mb-4 profile-title">This is me!</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-6">
+  <!-- Left Side: Profile Content -->
+  <div class="profile-container">
+    <div class="container">
+      <h2 class="profile-title">This is me!</h2>
+      <div class="text-center mt-4">
+        <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar">
+      </div>
 
-        <div class="mb-4 text-center">
-          <img id="avatarPreview" class="avatar mb-3" src="" alt="Avatar">
-        </div>
+      <div class="profile-info mb-3">
+        <strong>Name:</strong> <span id="displayName"></span>
+      </div>
 
-        <div class="profile-info mb-3">
-          <strong>Name:</strong> <span id="displayName"></span>
-        </div>
+      <div class="profile-info mb-3">
+        <strong>Email:</strong> <span id="displayEmail"></span>
+      </div>
 
-        <div class="profile-info mb-3">
-          <strong>Email:</strong> <span id="displayEmail"></span>
-        </div>
+      <div class="profile-info mb-3">
+        <strong>Location:</strong> <span id="displayLocation"></span>
+      </div>
 
-        <div class="profile-info mb-3">
-          <strong>Location:</strong> <span id="displayLocation"></span>
-        </div>
+      <div class="profile-info mb-3">
+        <strong>Birthday:</strong> <span id="displayBirthday"></span>
+      </div>
 
-        <div class="profile-info mb-3">
-          <strong>Birthday:</strong> <span id="displayBirthday"></span>
-        </div>
-
-        <div class="text-center">
-          <a href="edit_profile.html" class="btn btn-primary btn-custom">Edit Profile</a>
-        </div>
+      <div class="text-center mt-4">
+        <a href="edit_profile.html" class="btn btn-primary btn-custom">Edit Profile</a>
       </div>
     </div>
   </div>
 
-  <script  src="js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="./js/profile.js"></script>
-  <!--
-    <script type="module">
-    import { profile_url } from "../js/config.js";
+  <!-- Right Side: Image Background -->
+  <div class="image-container"></div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script>
     window.onload = function() {
-      fetch(profile_url +"/"+ 2)
+      fetch('/api/profile')
         .then(response => response.json())
         .then(data => {
-          // document.getElementById('avatarPreview').src = data.avatar;
-          document.getElementById('displayName').innerText = data.fullName;
+          document.getElementById('avatarPreview').src = data.avatar;
+          document.getElementById('displayName').innerText = data.name;
           document.getElementById('displayEmail').innerText = data.email;
           document.getElementById('displayLocation').innerText = data.location;
-          document.getElementById('displayBirthday').innerText = data.dob;
+          document.getElementById('displayBirthday').innerText = data.birthday;
         })
         .catch(error => console.error('Error loading profile data:', error));
     };
   </script>
--->
 </body>
 </html>
