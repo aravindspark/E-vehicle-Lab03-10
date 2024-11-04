@@ -411,6 +411,7 @@ async function addVehicleListener(event) {
   const current_lat = document.getElementById("vehicle-latitude").value;
   const current_lng = document.getElementById("vehicle-longitude").value;
   const battery_level = document.getElementById("battery-level").value;
+  const cost_per_hour = document.getElementById("vehicle-cost").value;
 
   if (!type_id || !status_id || !battery_level) {
     alert("Please fill in all required fields.");
@@ -425,6 +426,7 @@ async function addVehicleListener(event) {
     battery_level,
     current_lat,
     current_lng,
+    cost_per_hour,
   };
   console.log("add vehicle:", vehicleData);
   try {
