@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - E-Vehicle Share</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .form-container, .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            position: relative;
+        }
+        .form-container {
+            background-color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: slideIn 1s ease-out;
+        }
+        .image-container {
+            background-image: url('/images/WechatIMG835(1).png'); 
+            background-size: cover;
+            background-position: center;
+            animation: fadeIn 1.2s ease-out;
+        }
+        .form-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: popUp 1s ease;
+        }
+        
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            max-width: 400px; 
+            background-color: #8BC34A;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 10px 10px;
+        }
+        .navbar a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .navbar a:hover {
+            color: #C0CA33;
+        }
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes popUp {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 12px 25px;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-btn.active {
+            background-color: #8BC34A;
+            color: #fff;
+        }
+        .toggle-btn:not(.active) {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .toggle-btn:hover {
+            background-color: #8BC34A;
+            color: #fff;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            box-shadow: 0 0 10px rgba(139, 195, 74, 0.6);
+            transform: scale(1.02);
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(90deg, #8BC34A, #CDDC39);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #7CB342, #C0CA33);
+        }
+        .text-link {
+            color: #8BC34A;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            transition: color 0.3s ease;
+        }
+        .text-link:hover {
+            color: #5A9216;
+        }
+    </style>
+    <script>
+        function toggleForm(type) {
+            document.getElementById("loginForm").style.display = type === 'login' ? 'block' : 'none';
+            document.getElementById("registerForm").style.display = type === 'register' ? 'block' : 'none';
+            document.getElementById("loginToggle").classList.toggle('active', type === 'login');
+            document.getElementById("registerToggle").classList.toggle('active', type === 'register');
+        }
+    </script>
+</head>
+<body>
+    <div class="form-container">
+       
+        <div class="navbar">
+            <a href="index.html">E-Vehicle Share</a>
+        </div>
+
+        <div class="form-box">
+
+            <div class="toggle-container">
+                <button id="loginToggle" class="toggle-btn active" onclick="toggleForm('login')">Login</button>
+                <button id="registerToggle" class="toggle-btn" onclick="toggleForm('register')">Register</button>
+            </div>
+
+<div id="loginForm">
+    <h2>Welcome Back</h2>
+    <form id="loginFormElement" onsubmit="loginUser(event)">
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn">Sign in</button>
+    </form>
+    <span class="text-link" onclick="toggleForm('register')">Don't have an account? Register!</span>
+</div>
+
+
+            <!-- 注册表单 -->
+            <div id="registerForm" style="display: none;">
+                <h2>Create Account</h2>
+                <form id="registerFormElement" onsubmit="registerUser(event)">
+                    <div class="form-group">
+                        <input type="text" id="fullName" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="emailAddress" placeholder="Email Address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn">Sign Up</button>
+                </form>
+                <span class="text-link" onclick="toggleForm('login')">Already have an account? Login!</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-container"></div>
+</body>
+<script>
+    async function registerUser(event) {
+        console.log(1111)
+        event.preventDefault();
+
+        const fullName = document.getElementById('fullName').value;
+        const emailAddress = document.getElementById('emailAddress').value;
+        const password = document.getElementById('password').value;
+
+        const data = {
+            fullName: fullName,
+            email: emailAddress,
+            password: password
+        };
+
+        try {
+            const response = await fetch('http://13.61.24.246:8000/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+
+                alert("Registration successful!");
+                window.location.href = 'login register_1.html'; 
+            } else {
+
+                const errorData = await response.json();
+                alert("Error: " + errorData.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to register. Please try again.");
+        }
+    }
+</script>
+<script>
+    async function loginUser(event) {
+        event.preventDefault(); 
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        
+        const data = {
+            email: email,
+            password: password
+        };
+
+        try {
+            const response = await fetch('/login_process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                
+                const responseData = await response.json();
+
+                
+                const username = responseData.username;
+                const token = responseData.token;
+
+                
+                localStorage.setItem('authToken', token);
+
+                alert("Login successful! Welcome, " + username);
+
+            } else {
+                const errorData = await response.json();
+                alert("Error: " + errorData.message);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to log in. Please try again.");
+        }
+    }
+</script>
+</html>

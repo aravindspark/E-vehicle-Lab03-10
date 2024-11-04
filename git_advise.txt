@@ -1,0 +1,7 @@
+##################
+Git experience sharing 
+1.You should create your own ssh key and add it to your github account.
+2.ssh is not stable in gitlab(I dont know why) and you should use https instead.
+3.Since our gitlab server provides limited functions(It can only mirror github repositories with push,not pull)
+You can choose either go to github for pull:https://github.com/Xlength/GLA_TeamProject
+               or use gitlab instead https://stgit.dcs.gla.ac.uk/programming-and-systems-development-m/2024/lb03-10/E-Vehicle-Team10

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>rent - E-Vehicle Share</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <style>
+
+body {
+    background-color: #e6f7f1;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#map, #carouselExampleIndicators {
+    height: 400px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.vehicle-container {
+    width: 100%;
+    max-width: 1230px;
+    margin: 0 auto;
+}
+
+.carousel-inner img {
+    width: 100%;
+    height: auto; 
+    max-height: 500px; 
+    object-fit: contain;
+    max-width: 1200px;
+    background-color: #e6f7f1;
+}
+
+
+
+.info-window {
+    max-width: 400px;
+    min-height: 200px;
+    padding: 15px;
+    word-wrap: break-word;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.btn-rented {
+    background-color: #C0CA33;
+    color: white;
+    cursor: not-allowed;
+}
+
+.battery {
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.battery-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.battery-low {
+    color: #f44336;
+}
+
+.battery-normal {
+    color: #8BC34A;
+}
+
+.rent-section {
+    background-color: #e6f7f1;
+    padding: 20px;
+    text-align: center;
+}
+
+.rent-section h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #555;
+}
+
+.rent-section .form-select {
+    display: inline-block;
+    width: auto;
+    margin: 0 10px;
+}
+
+.rent-section label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.rent-section button {
+    background-color: #8BC34A;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.rent-section button:hover {
+    background-color: #C0CA33;
+}
+
+.vehicle-item {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    width: calc(33% - 10px);
+}
+
+.category-buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.category-button {
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: #e6f7f1;
+    color: black;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.category-button.active {
+    background-color: #8BC34A;
+    color: white;
+}
+
+.vehicle-display {
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.vehicle-display img {
+    width: 100%;
+    height: auto;
+}
+
+.navbar {
+    background-color: #8BC34A; /* 设置导航栏背景颜色 */
+    padding: 10px 20px;
+}
+
+.navbar .nav-link {
+    color: white;
+    font-weight: 500;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+    color: #CDDC39;
+}
+</style>
+
+    
+</head>
+<body onload="initMap()">
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">E-Vehicle Share</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="rent.html">Rent</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="order.html">Order</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">Profile</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5" aria-label="Slide 6"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="6" aria-label="Slide 7"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="images/L1.jpg" class="d-block w-100" alt="L1">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L2.jpg" class="d-block w-100" alt="L2">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L3.JPG" class="d-block w-100" alt="L3">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L4.jpg" class="d-block w-100" alt="L4">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L5.jpg" class="d-block w-100" alt="L5">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L6.jpg" class="d-block w-100" alt="L6">
+    </div>
+    <div class="carousel-item">
+      <img src="images/L7.jpg" class="d-block w-100" alt="L7">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+<div class="container mt-5 vehicle-container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Vehicle Selection</h5>
+          <p class="card-text">Choose a vehicle type to rent</p>
+          <select id="vehicle-select" class="form-select mb-3">
+            <optgroup label="E-bike">
+              <option value="mountain-bike">Mountain Bike</option>
+              <option value="road-bike">Road Bike</option>
+              <option value="city-bike">City Bike</option>
+            </optgroup>
+            <optgroup label="E-scooter">
+              <option value="electric-car">E-Scooter1</option>
+              <option value="electric-scooter">E-Scooter2</option>
+              <option value="electric-motorbike">E-Scooter3</option>
+            </optgroup>
+          </select>
+          <a href="#" id="rent-btn" class="btn btn-primary">Rent!</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container vehicle-display mt-5">
+    <h3 class="text-center">Vehicle Display</h3>
+    <div class="category-buttons">
+      <button class="category-button active" onclick="showVehicles('mountain')">Mountain</button>
+      <button class="category-button" onclick="showVehicles('sport')">Sport</button>
+      <button class="category-button" onclick="showVehicles('fashion')">Fashion</button>
+    </div>
+    <div id="vehicle-list" class="row">
+      <div class="col-md-4">
+        <img src="images/B1.jpg" alt="Vehicle A" class="img-fluid">
+        <p class="text-center">Vehicle A</p>
+      </div>
+      <div class="col-md-4">
+        <img src="images/B2.jpg" alt="Vehicle B" class="img-fluid">
+        <p class="text-center">Vehicle B</p>
+      </div>
+      <div class="col-md-4">
+        <img src="images/B3.jpg" alt="Vehicle C" class="img-fluid">
+        <p class="text-center">Vehicle C</p>
+      </div>
+    </div>
+  </div>
+
+
+  </div>
+
+
+  <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reportModalLabel">Report Vehicle Issue</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="reportForm">
+            <div class="mb-3">
+              <label for="vehicleType" class="form-label">Vehicle Type</label>
+              <input type="text" class="form-control" id="vehicleType" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="issueDescription" class="form-label">Describe the Issue</label>
+              <textarea class="form-control" id="issueDescription" rows="3" placeholder="Describe the problem..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="submitReport">Submit Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2cM4H9VXresHmwR_P7RpLcuwpKaZdriw"></script>
+  <script>
+    let map;
+    let markers = [];
+    let infoWindow;  
+    let currentVehicleTitle = ""; 
+
+    const icons = {
+      ebike: {
+        icon: "https://maps.google.com/mapfiles/kml/shapes/cycling.png"
+      },
+      evehicle: {
+        icon: {
+        url: "images/scooter.png",
+        scaledSize: new google.maps.Size(32, 32) 
+    }
+      },
+
+      myLocation: {
+        icon: "https://maps.google.com/mapfiles/kml/shapes/man.png" 
+      }
+    };
+
+    function initMap() {
+        const glasgow = { lat: 55.8721, lng: -4.2882 };
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: glasgow,
+        });
+        infoWindow = new google.maps.InfoWindow(); 
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    const myLocationMarker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        title: "My Location",
+                        icon: icons.myLocation.icon
+                    });
+
+                    const userCircle = new google.maps.Circle({
+                        strokeColor: "#FF0000",
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: "#FF0000",
+                        fillOpacity: 0.35,
+                        map: map,
+                        center: pos,
+                        radius: 5000  
+                    });
+
+                    infoWindow.setPosition(pos);
+                    infoWindow.setContent('Your Location');
+                    infoWindow.open(map, myLocationMarker);
+                    map.setCenter(pos); 
+                },
+                function() {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                }
+            );
+        } else {
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(
+            browserHasGeolocation
+                ? "Error: The Geolocation service failed."
+                : "Error: Your browser doesn't support geolocation."
+        );
+        infoWindow.open(map);
+    }
+
+    function addMarkers(locations, vehicleType) {
+        clearMarkers();
+
+        locations.forEach(function(location) {
+            const marker = new google.maps.Marker({
+                position: location.position,
+                map: map,
+                title: location.title,
+                icon: vehicleType === "ebike" ? icons.ebike.icon : icons.evehicle.icon 
+            });
+
+            const batteryLevel = Math.floor(Math.random() * 101); 
+            const batteryClass = batteryLevel <= 20 ? "battery-low" : "battery-normal";  
+            const batteryColor = batteryLevel <= 20 ? "red" : "green";  
+
+            const batteryIcon = `<svg class="battery-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${batteryColor}" width="16px" height="16px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 4h-3V2h-2v2H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H8V6h8v14z"/></svg>`;
+
+            let rentButtonHtml;
+            if (location.status === "normal") {
+                rentButtonHtml = `<a href="order.html" class="btn btn-success">Rent ${location.title}</a>`;
+            } else if (location.status === "breakdown") {
+                rentButtonHtml = `<a href="#" class="btn btn-secondary disabled">Unavailable</a>`;
+            } else if (location.status === "rented") {
+                rentButtonHtml = `<a href="#" class="btn btn-rented disabled">Rented</a>`; // 红色按钮，表示rented Red button: Rented
+            }
+
+            //When you click the marker, an information window pops up
+            marker.addListener("click", function() {
+                // 先关闭之前的 InfoWindow
+                //Close the previous InfoWindow first
+                infoWindow.close();
+                // 设置新的 InfoWindow 内容并打开
+                //Set the new InfoWindow content and open it
+                infoWindow.setContent(`
+                    <div class="info-window">
+                        <h5>${location.title}</h5>
+                        <p>Status: ${location.status}</p>
+                        <p>${location.infoContent}</p>
+                        ${rentButtonHtml}
+                        <div class="battery ${batteryClass}">
+                          ${batteryIcon} ${batteryLevel}%
+                        </div>
+                        <button class="btn btn-warning mt-2" onclick="openReportModal('${location.title}')">Report Issue</button>
+                    </div>
+                `);
+                infoWindow.open(map, marker);
+                currentVehicleTitle = location.title;  // 设置当前车辆名称 Set the current vehicle name
+            });
+
+            markers.push(marker);
+        });
+    }
+
+    // 清除现有的标记 Clear existing tags
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+
+// 单一的点击事件处理器 Single click event handler
+document.getElementById("rent-btn").addEventListener("click", function (event) {
+    event.preventDefault();
+    const selectedVehicle = document.getElementById("vehicle-select").value;
+    let vehicleLocations = [];
+
+    if (selectedVehicle === "mountain-bike") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8708, lng: -4.2810 },
+                title: "Mountain Bike Location 1",
+                status: "normal",
+                infoContent: `<p>Location: West End</p><p>Available: 3 bikes</p>`
+            },
+            {
+                position: { lat: 55.8735, lng: -4.2922 },
+                title: "Mountain Bike Location 2",
+                status: "breakdown",
+                infoContent: `<p>Location: Kelvingrove Park</p><p>Available: 0 bikes</p>`
+            },
+            {
+                position: { lat: 55.8720, lng: -4.2700 },
+                title: "Mountain Bike Location 3",
+                status: "rented",
+                infoContent: `<p>Location: City Center</p><p>Available: 0 bikes</p>`
+            }
+        ];
+    } else if (selectedVehicle === "road-bike") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8680, lng: -4.2590 },
+                title: "Road Bike Location 1",
+                status: "normal",
+                infoContent: `<p>Location: City Center</p><p>Available: 2 bikes</p>`
+            },
+            {
+                position: { lat: 55.8690, lng: -4.2855 },
+                title: "Road Bike Location 2",
+                status: "breakdown",
+                infoContent: `<p>Location: Riverside Museum</p><p>Available: 0 bikes</p>`
+            }
+        ];
+    } else if (selectedVehicle === "city-bike") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8654, lng: -4.2708 },
+                title: "City Bike Location 1",
+                status: "normal",
+                infoContent: `<p>Location: City Center</p><p>Available: 4 bikes</p>`
+            },
+            {
+                position: { lat: 55.8632, lng: -4.2489 },
+                title: "City Bike Location 2",
+                status: "rented",
+                infoContent: `<p>Location: Merchant City</p><p>Available: 0 bikes</p>`
+            }
+        ];
+    } else if (selectedVehicle === "electric-car") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8654, lng: -4.2708 },
+                title: "E-Scooter Location 1",
+                status: "normal",
+                infoContent: `<p>Location: City Center</p><p>Available: 2 cars</p>`
+            },
+            {
+                position: { lat: 55.8594, lng: -4.2512 },
+                title: "E-Scooter Location 2",
+                status: "breakdown",
+                infoContent: `<p>Location: Merchant City</p><p>Available: 0 cars</p>`
+            }
+        ];
+    } else if (selectedVehicle === "electric-scooter") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8710, lng: -4.2331 },
+                title: "E-Scooter2 Location 1",
+                status: "normal",
+                infoContent: `<p>Location: East End</p><p>Available: 5 scooters</p>`
+            },
+            {
+                position: { lat: 55.8705, lng: -4.2850 },
+                title: "E-Scooter2 Location 2",
+                status: "rented",
+                infoContent: `<p>Location: Riverside Museum</p><p>Available: 0 scooters</p>`
+            }
+        ];
+    } else if (selectedVehicle === "electric-motorbike") {
+        vehicleLocations = [
+            {
+                position: { lat: 55.8662, lng: -4.2695 },
+                title: "E-Scooter3 Location 1",
+                status: "normal",
+                infoContent: `<p>Location: City Center</p><p>Available: 1 motorbike</p>`
+            },
+            {
+                position: { lat: 55.8591, lng: -4.2457 },
+                title: "E-Scooter3 Location 2",
+                status: "breakdown",
+                infoContent: `<p>Location: Merchant City</p><p>Available: 0 motorbikes</p>`
+            }
+        ];
+    }
+
+    addMarkers(vehicleLocations, selectedVehicle.includes("bike") ? "ebike" : "evehicle"); // 根据选择的车辆类型显示标记 Displays markings based on the selected vehicle type
+});
+
+
+    // 打开举报对话框 The report dialog box opens
+    function openReportModal(vehicleTitle) {
+        document.getElementById("vehicleType").value = vehicleTitle;  // 设置车辆名称 Set vehicle name
+        const reportModal = new bootstrap.Modal(document.getElementById("reportModal"));
+        reportModal.show();  // 显示模态框 Display mode box
+    }
+
+    // 提交举报 Submit a report
+    document.getElementById("submitReport").addEventListener("click", function() {
+        const vehicleType = document.getElementById("vehicleType").value;
+        const issueDescription = document.getElementById("issueDescription").value;
+        if (issueDescription.trim() === "") {
+            alert("Please describe the issue.");
+            return;
+        }
+
+        alert(`Report submitted for ${vehicleType}.\nIssue: ${issueDescription}`);
+        document.getElementById("reportForm").reset();  // 重置表单 Reset Form
+        const reportModal = bootstrap.Modal.getInstance(document.getElementById("reportModal"));
+        reportModal.hide();  // 隐藏模态框 Hide the mode box
+    });
+    const vehicles = {
+      mountain: [
+        { name: "Vehicle A", img: "images/B1.jpg" },
+        { name: "Vehicle B", img: "images/B2.jpg" },
+        { name: "Vehicle C", img: "images/B3.jpg" }
+      ],
+      sport: [
+        { name: "Vehicle D", img: "images/B4.jpg" },
+        { name: "Vehicle E", img: "images/B9.jpg" },
+        { name: "Vehicle F", img: "images/B6.jpg" }
+      ],
+      fashion: [
+        { name: "Vehicle G", img: "images/B7.jpg" },
+        { name: "Vehicle H", img: "images/B8.jpg" },
+        { name: "Vehicle I", img: "images/B9.jpg" }
+      ]
+    };
+
+    function showVehicles(category) {
+      const vehicleList = document.getElementById("vehicle-list");
+      vehicleList.innerHTML = "";
+
+      vehicles[category].forEach(vehicle => {
+        const vehicleDiv = document.createElement("div");
+        vehicleDiv.classList.add("col-md-4");
+        vehicleDiv.innerHTML = `
+          <img src="${vehicle.img}" alt="${vehicle.name}" class="img-fluid">
+          <p class="text-center">${vehicle.name}</p>
+        `;
+        vehicleList.appendChild(vehicleDiv);
+      });
+
+      document.querySelectorAll(".category-button").forEach(button => {
+        button.classList.remove("active");
+      });
+      event.currentTarget.classList.add("active");
+    }
+    
+  </script>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
