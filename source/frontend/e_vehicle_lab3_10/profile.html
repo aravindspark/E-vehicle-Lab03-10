@@ -93,11 +93,13 @@
     </div>
   </div>
 
-  <script src="js/bootstrap.bundle.min.js"></script>
-  <script>
-  
+  <script  src="js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./js/profile.js"></script>
+  <!--
+    <script type="module">
+    import { profile_url } from "../js/config.js";
     window.onload = function() {
-      fetch('http://127.0.0.1:8000/api/customer/profile/2')
+      fetch(profile_url +"/"+ 2)
         .then(response => response.json())
         .then(data => {
           // document.getElementById('avatarPreview').src = data.avatar;
@@ -109,5 +111,6 @@
         .catch(error => console.error('Error loading profile data:', error));
     };
   </script>
+-->
 </body>
 </html>

@@ -88,13 +88,15 @@
             <input type="date" class="form-control" id="birthday" value="">
           </div>
 
-          <button type="button" class="btn btn-primary w-100 btn-custom" onclick="saveProfile()">Save Changes</button>
+          <button type="button" id="save_btn" class="btn btn-primary w-100 btn-custom">Save Changes</button>
         </div>
       </div>
     </form>
   </div>
 
   <script src="js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/edit_profile.js"></script>
+  <!--
   <script>
 
     window.onload = function() {
@@ -132,5 +134,6 @@
       .catch(error => console.error('Error updating profile:', error));
     }
   </script>
+  -->
 </body>
 </html>
