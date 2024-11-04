@@ -97,14 +97,14 @@
   <script>
   
     window.onload = function() {
-      fetch('/api/profile')
+      fetch('http://127.0.0.1:8000/api/customer/profile/2')
         .then(response => response.json())
         .then(data => {
-          document.getElementById('avatarPreview').src = data.avatar;
-          document.getElementById('displayName').innerText = data.name;
+          // document.getElementById('avatarPreview').src = data.avatar;
+          document.getElementById('displayName').innerText = data.fullName;
           document.getElementById('displayEmail').innerText = data.email;
           document.getElementById('displayLocation').innerText = data.location;
-          document.getElementById('displayBirthday').innerText = data.birthday;
+          document.getElementById('displayBirthday').innerText = data.dob;
         })
         .catch(error => console.error('Error loading profile data:', error));
     };

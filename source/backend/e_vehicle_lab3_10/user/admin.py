@@ -5,19 +5,19 @@ from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
     # Fields to display in the admin list view
-    list_display = ('email', 'firstname', 'lastname', 'user_type', 'is_staff', 'is_active')
+    list_display = ('email', 'firstname', 'lastname', 'user_type',)
     # Fields that can be directly edited in the list view
-    list_editable = ('is_active', 'is_staff')
+    # list_editable = ('is_staff')
     # Fields to search in the search bar
     search_fields = ('email', 'firstname', 'lastname', 'phone_number')
     # Fields for filtering the list
-    list_filter = ('is_active', 'is_staff', 'user_type')
+    list_filter = ('user_type',)
 
     # Define field groups for the admin detail view
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('firstname', 'lastname', 'midname', 'phone_number', 'birth_date')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'user_type')}),
+        ('Permissions', {'fields': ('is_superuser', 'user_type')}),
         ('Important Dates', {'fields': ('last_login',)}),
     )
 
