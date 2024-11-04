@@ -26,9 +26,9 @@ class Vehicle(models.Model):
         limit_choices_to={'user_type': 'operator'}  # limited user_type 'operator'
     )
 
-    current_location = models.CharField(max_length=20)  # postcode
-    current_lat = models.FloatField(default=None, null=True, blank=True)
-    current_lng = models.FloatField(default=None, null=True, blank=True)
+    current_location = models.CharField(max_length=100)  # postcode or something like "1 Beith St, Glasgow G11 6PS"
+    current_lat = models.FloatField(default=None)
+    current_lng = models.FloatField(default=None)
     battery_level = models.FloatField(default=0, null=True, blank=True)
     last_service_date = models.DateTimeField(
         default=datetime.datetime(1900, 1, 1), null=True, blank=True

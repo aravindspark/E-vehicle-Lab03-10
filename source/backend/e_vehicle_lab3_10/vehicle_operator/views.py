@@ -13,7 +13,8 @@ from .serializer import (
 )
 import requests
 
-gm_geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"
+gm_geocode_url_address = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"
+gm_geocode_url_latlng = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s&key=AIzaSyCslggYN9083AFtqYZeK6D3toY606bhqig"
 User = get_user_model()
 
 
@@ -102,6 +103,7 @@ class VehicleView(APIView):
                 return Response(f"message: {str(e)}", status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
+        # if we only get location, then get lng and lat by self
         if (
                 request.data.get("current_lat") == ""
                 or request.data.get("current_lat") == None
@@ -117,6 +119,16 @@ class VehicleView(APIView):
                 )
             request.data["current_lat"] = current_lat
             request.data["current_lng"] = current_lng
+        # if we only get lat and lng, then get location by api
+        elif (
+                request.data.get("current_location") == ""
+                or request.data.get("current_location") == None
+        ):
+            current_lat = request.data.get("current_lat")
+            current_lng = request.data.get("current_lng")
+            request.data["current_location"] = self._get_location_by_lat_lng(
+                current_lat, current_lng
+            )
         serializer = VehicleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -129,7 +141,7 @@ class VehicleView(APIView):
                 vehicle = Vehicle.objects.get(id=pk)
                 vehicle.delete()
                 return Response(
-                    {"message": "vehicle deleted"}, status=status.HTTP_204_NO_CONTENT
+                    {"message": "vehicle deleted"}, status=status.HTTP_200_OK
                 )
             except Vehicle.DoesNotExist:
                 return Response(
@@ -145,8 +157,14 @@ class VehicleView(APIView):
         if pk:
             try:
                 vehicle = Vehicle.objects.get(id=pk)
-                # if change current_location, then update lat lng
-                if request.data.get("current_location"):
+                # if only change location, then get lat and lng
+                if request.data.get("current_lat") and request.data.get("current_lng"):
+                    current_lat = request.data.get("current_lat")
+                    current_lng = request.data.get("current_lng")
+                    request.data["current_location"] = self._get_location_by_lat_lng(
+                        current_lat, current_lng
+                    )
+                elif request.data.get("current_location"):
                     error_message, current_lat, current_lng = (
                         self._update_lat_lng_by_postcode(
                             request.data.get("current_location")
@@ -159,6 +177,8 @@ class VehicleView(APIView):
                         )
                     request.data["current_lat"] = current_lat
                     request.data["current_lng"] = current_lng
+                # if only change lang and lat
+
                 serializer = VehicleSerializer(vehicle, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -177,7 +197,7 @@ class VehicleView(APIView):
     def _update_lat_lng_by_postcode(self, current_location):
         error_message = None
         current_lat, current_lng = None, None
-        response = requests.get(gm_geocode_url % current_location)
+        response = requests.get(gm_geocode_url_address % current_location)
         data = response.json()
         if data["status"] == "OK":
             current_lat = data["results"][0]["geometry"]["location"]["lat"]
@@ -187,6 +207,14 @@ class VehicleView(APIView):
                 f"google map api's status is not ok, status is {data['status']}"
             )
         return error_message, current_lat, current_lng
+
+    def _get_location_by_lat_lng(self, lat, lng):
+        response = requests.get(gm_geocode_url_latlng % f"{lat},{lng}")
+        data = response.json()
+        if data["status"] == "OK":
+            return data["results"][0]["formatted_address"]
+        else:
+            return None
 
 
 class VehicleStatusView(APIView):
