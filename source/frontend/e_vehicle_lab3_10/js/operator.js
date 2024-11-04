@@ -1,5 +1,4 @@
 // main.js
-
 import { fetchWithToken } from "./common.js";
 import {
   vehicle_status_url,
@@ -13,6 +12,11 @@ let allVehicleData = []; // Store all vehicle data
 let currentPage = 1; // Current page number
 let rowsPerPage = 5; // Number of rows per page
 let filteredVehicleData = []; // Stores data after applying filters
+let infoWindow = new google.maps.InfoWindow(); // only show one info window at a time
+let lanlatInfoWindow = new google.maps.InfoWindow(); // only show one info window at a time
+let statusIdMap = new Map(); // Map to store status ID and status name
+let idStatusMap = new Map(); // Map to store status name and status ID
+let idMarkerMap = new Map(); // Map to store vehicle ID and marker
 // Initialization function
 async function initConditions() {
   // Load vehicle types, statuses, and data
@@ -34,6 +38,19 @@ async function initConditions() {
   document
     .getElementById("apply-filters")
     .addEventListener("click", applyFilters);
+
+  // AddVehicleModal button click
+  document
+    .getElementById("addVehicleBtn")
+    .addEventListener("click", addVehicleModalListener);
+}
+
+function addVehicleModalListener() {
+  document.getElementById("latitude-container").style.display = "none";
+  document.getElementById("longitude-container").style.display = "none";
+  document.getElementById("current-location-container").style.display = "block";
+  document.getElementById("vehicle-latitude").value = "";
+  document.getElementById("vehicle-longitude").value = "";
 }
 
 function initMap() {
@@ -45,7 +62,51 @@ function initMap() {
     zoom: 12,
     center: centerCoordinates,
   });
+  // var infoWindow = new google.maps.InfoWindow();
+  // var infoWindow = new google.maps.InfoWindow();
+  map.addListener("rightclick", function (event) {
+    var lat = event.latLng.lat();
+    var lng = event.latLng.lng();
+    var contentString =
+      "<div>" +
+      "<p>lat" +
+      lat.toFixed(6) +
+      "<br>lan" +
+      lng.toFixed(6) +
+      "</p>" +
+      '<button id="selectLocationButton" data-bs-toggle="modal" data-bs-target="#addVehicleModal">add vehicle</button>' +
+      "</div>";
 
+    lanlatInfoWindow.setContent(contentString);
+    lanlatInfoWindow.setPosition(event.latLng);
+    lanlatInfoWindow.open(map);
+
+    google.maps.event.addListenerOnce(
+      lanlatInfoWindow,
+      "domready",
+      function () {
+        document
+          .getElementById("selectLocationButton")
+          .addEventListener("click", function () {
+            document.getElementById(
+              "current-location-container"
+            ).style.display = "none";
+
+            document.getElementById("latitude-container").style.display =
+              "block";
+            document.getElementById("longitude-container").style.display =
+              "block";
+
+            document.getElementById("vehicle-latitude").value = lat.toFixed(6);
+            document.getElementById("vehicle-longitude").value = lng.toFixed(6);
+            document.getElementById("vehicle-location").value = "";
+
+            // close InfoWindow
+            lanlatInfoWindow.close();
+          });
+      }
+    );
+  });
   // Add markers for each vehicle
   showVehicleMarkers(filteredVehicleData);
 }
@@ -61,6 +122,7 @@ function showVehicleMarkers(vehicleData) {
       type_name,
       battery_level,
       status_name,
+      id,
     } = vehicle;
 
     let emoji = "🌳";
@@ -76,22 +138,135 @@ function showVehicleMarkers(vehicleData) {
       },
       title: `${type_name} - Battery: ${battery_level}% - Status: ${status_name}`,
     });
-
-    // Optional: Add an info window
-    const infoWindow = new google.maps.InfoWindow({
-      content: `<div>
-                  <h6>${type_name}</h6>
-                  <p>Battery Level: ${battery_level}%</p>
-                  <p>Status: ${status_name}</p>
-                </div>`,
-    });
-
-    // Show info window on marker click
+    idMarkerMap.set(vehicle.id, marker);
+    // Add an event listener to the marker to open the info window
     marker.addListener("click", () => {
+      infoWindow.setContent(` <div>
+                                <h6>id: ${id}</h6>
+                                <p>${type_name}</p>
+                                <p>Battery Level: ${battery_level}%</p>
+                                <p>Status: ${status_name}</p>
+                                <button id="move-button">Move</button>
+                              </div>`);
       infoWindow.open(map, marker);
+
+      console.log(idMarkerMap);
+      // Wait until the DOM is ready
+      getInfoWindowWithMove(infoWindow, vehicle, marker);
     });
+
     markers.push(marker);
   });
+}
+
+function getInfoWindowWithMove(infowindow_new, vehicle, marker) {
+  google.maps.event.addListenerOnce(infowindow_new, "domready", () => {
+    // Add click event listener to the Move button
+    document.getElementById("move-button").addEventListener("click", () => {
+      // Ask the user for their preferred method
+      const choice = confirm(
+        "Click 'OK' to select a point on the map, or 'Cancel' to input location information."
+      );
+      if (choice) {
+        // Allow the user to click on the map to select a new location
+        alert("Click on the map to choose a new location.");
+        const clickListener = map.addListener("click", (event) => {
+          const newPosition = event.latLng;
+          // Move the marker to the new position
+          marker.setPosition(newPosition);
+          map.panTo(newPosition);
+          // Remove the click listener to prevent multiple selections
+          google.maps.event.removeListener(clickListener);
+          sendNewPositionToBackend(
+            newPosition.lat(),
+            newPosition.lng(),
+            vehicle.id
+          ).then((result) => {
+            console.log("result", result); // true 或 false
+            if (result) {
+              marker.setPosition(newPosition);
+              map.panTo(newPosition);
+            }
+          });
+        });
+      } else {
+        // Allow the user to input location information
+        const locationInput = prompt(
+          "Enter coordinates (lat,lng) or an address:"
+        );
+        if (locationInput) {
+          const coords = locationInput.split(",");
+          if (coords.length === 2) {
+            const lat = parseFloat(coords[0]);
+            const lng = parseFloat(coords[1]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+              const newPosition = new google.maps.LatLng(lat, lng);
+              marker.setPosition(newPosition);
+              map.panTo(newPosition);
+              sendNewPositionToBackend(lat, lng, vehicle.id).then((result) => {
+                console.log("result", result); // true 或 false
+                if (result) {
+                  marker.setPosition(newPosition);
+                  map.panTo(newPosition);
+                }
+              });
+              return;
+            }
+          }
+          // Use Geocoding API to convert address to coordinates
+          const geocoder = new google.maps.Geocoder();
+          console.log("locationInput", locationInput);
+          geocoder.geocode({ address: locationInput }, (results, status) => {
+            if (status === "OK" && results[0]) {
+              const newPosition = results[0].geometry.location;
+              sendNewPositionToBackend(
+                newPosition.lat(),
+                newPosition.lng(),
+                vehicle.id
+              ).then((result) => {
+                console.log("result", result); // true or false
+                if (result) {
+                  marker.setPosition(newPosition);
+                  map.panTo(newPosition);
+                }
+              });
+            } else {
+              alert("Geocoding failed: " + status);
+            }
+          });
+        } else {
+          alert("No input provided.");
+        }
+      }
+    });
+  });
+}
+// Function to send new position to the backend
+function sendNewPositionToBackend(lat, lng, vehicle_id) {
+  const data = { current_lat: lat, current_lng: lng };
+  console.log("move", data);
+  return fetch(vehicles_url + "/" + vehicle_id, {
+    // 返回 fetch 的 Promise
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (response.ok) {
+        alert("Position updated successfully.");
+        return true;
+      } else {
+        alert("Failed to update position.");
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("Error updating position.");
+      return false;
+    });
 }
 // Function clearMarkers
 function clearMarkers() {
@@ -101,14 +276,8 @@ function clearMarkers() {
 
 // Function to apply filters
 function applyFilters() {
-  console.log("Apply Filters button clicked"); // For debugging
-
   const selectedType = document.getElementById("filter-type").value;
   const selectedStatus = document.getElementById("filter-status").value;
-
-  console.log("Selected Type:", selectedType); // For debugging
-  console.log("Selected Status:", selectedStatus); // For debugging
-  console.log(allVehicleData);
   // Filter the allVehicleData array
   filteredVehicleData = allVehicleData.filter((vehicle) => {
     const matchesType = selectedType
@@ -118,7 +287,6 @@ function applyFilters() {
       ? vehicle.status_id.toString() === selectedStatus ||
         selectedStatus === "0"
       : true;
-    console.log(matchesType, matchesStatus);
     return matchesType && matchesStatus;
   });
 
@@ -170,6 +338,17 @@ async function loadVehicleTypes() {
 async function loadVehicleStatus() {
   try {
     const statusOptions = await fetchWithToken(vehicle_status_url);
+    // console.log(statusOptions);
+    statusIdMap = statusOptions.reduce((acc, status) => {
+      acc[status.status_name] = status.id;
+      return acc;
+    }, {});
+    idStatusMap = statusOptions.reduce((acc, status) => {
+      acc[status.id] = status.status_name;
+      return acc;
+    }, {});
+    console.log(statusIdMap);
+    console.log(idStatusMap);
     const container = document.getElementById("vehicle-status-container");
     container.innerHTML = ""; // Clear the container
     const filterStatusElement = document.getElementById("filter-status"); // For filtering
@@ -229,9 +408,11 @@ async function addVehicleListener(event) {
   );
   const status_id = statusInput ? statusInput.value.split("-")[1] : null;
   const current_location = document.getElementById("vehicle-location").value;
+  const current_lat = document.getElementById("vehicle-latitude").value;
+  const current_lng = document.getElementById("vehicle-longitude").value;
   const battery_level = document.getElementById("battery-level").value;
 
-  if (!type_id || !status_id || !current_location || !battery_level) {
+  if (!type_id || !status_id || !battery_level) {
     alert("Please fill in all required fields.");
     return;
   }
@@ -242,9 +423,10 @@ async function addVehicleListener(event) {
     status_id,
     current_location,
     battery_level,
+    current_lat,
+    current_lng,
   };
-  console.log(vehicleData);
-
+  console.log("add vehicle:", vehicleData);
   try {
     // Send the data to the backend
     await fetchWithToken(vehicles_url, {
@@ -278,13 +460,88 @@ function getBatteryIcon(batteryLevel) {
   if (batteryLevel >= 25) return "quarter";
   return "empty";
 }
-
+// Confirm repair
+async function confirmRepair(vehicle_id) {
+  try {
+    const data = await fetchWithToken(`${vehicles_url}/${vehicle_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status_id: statusIdMap["repairing"] }),
+    });
+    alert("Vehicle repaired successfully!");
+    await loadVehicleData();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred. Please try again later.");
+  }
+}
+// Confirm finish repair
+async function confirmFinishRepair(vehicle_id) {
+  try {
+    const data = await fetchWithToken(`${vehicles_url}/${vehicle_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status_id: statusIdMap["available"] }),
+    });
+    console.log(statusIdMap);
+    console.log(idStatusMap);
+    console.log("confirmFinishRepair", { status_id: idStatusMap["available"] });
+    alert("Vehicle finished repairing successfully!");
+    await loadVehicleData();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred. Please try again later.");
+  }
+}
+// Confirm Charge
+async function confirmCharge(vehicle_id) {
+  try {
+    const data = await fetchWithToken(`${vehicles_url}/${vehicle_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status_id: statusIdMap["charging"] }),
+    });
+    alert("Vehicle charged successfully!");
+    await loadVehicleData();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred. Please try again later.");
+  }
+}
+// Confirm finish charge
+async function confirmFinishCharge(vehicle_id) {
+  try {
+    const chargeAmount = document.getElementById("chargeBattery").value;
+    console.log("chargeAmount", chargeAmount);
+    const data = await fetchWithToken(`${vehicles_url}/${vehicle_id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status_id: statusIdMap["available"],
+        battery_level: parseInt(chargeAmount, 10),
+      }),
+    });
+    alert("Vehicle finished charging successfully!");
+    await loadVehicleData();
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred. Please try again later.");
+  }
+}
 // Modify the loadVehicleData function to initialize filteredVehicleData
 async function loadVehicleData() {
   try {
     const data = await fetchWithToken(vehicles_url);
-    allVehicleData = data; // Store all data
-    filteredVehicleData = data; // Initialize filtered data with all data
+    allVehicleData = [...data].reverse(); // Store all data
+    filteredVehicleData = [...data].reverse(); // Initialize filtered data with all data
     initMap();
     renderTable(currentPage); // Render the table
     renderPagination(); // Render pagination buttons
@@ -320,6 +577,44 @@ function renderTable(page) {
     img.style.height = "100px";
     imgCell.appendChild(img);
 
+    // Create id cell
+    const idCell = document.createElement("td");
+    idCell.innerHTML =
+      '<span class="clickable-number" data-lat="' +
+      vehicle.current_lat +
+      '" data-lng="' +
+      vehicle.current_lng +
+      '">' +
+      vehicle.id +
+      "</span>";
+    idCell
+      .querySelector(".clickable-number")
+      .addEventListener("click", function () {
+        document.getElementById("map").scrollIntoView({ behavior: "smooth" });
+        const lat = parseFloat(this.getAttribute("data-lat"));
+        const lng = parseFloat(this.getAttribute("data-lng"));
+        map.setCenter({ lat, lng });
+        const markerInfo = idMarkerMap.get(vehicle.id);
+        if (markerInfo) {
+          infoWindow.setContent(` <div>
+                          <h6>id: ${vehicle.id}</h6>
+                          <p>${vehicle.type_name}</p>
+                          <p>Battery Level: ${vehicle.battery_level}%</p>
+                          <p>Status: ${vehicle.status_name}</p>
+                          <button id="move-button">Move</button>
+                        </div>`);
+          infoWindow.open(map, markerInfo);
+          getInfoWindowWithMove(infoWindow, vehicle, markerInfo);
+
+          // markerInfo.infoWindow.open(map, markerInfo.marker);
+          // map.panTo(markerInfo.marker.getPosition());
+          map.setZoom(16);
+        } else {
+          console.error("No marker found for this location.", vehicle.id);
+          console.log(idMarkerMap);
+        }
+      });
+
     // Create model cell
     const modelCell = document.createElement("td");
     modelCell.textContent = vehicle.type_name;
@@ -348,39 +643,128 @@ function renderTable(page) {
 
     // Create location cell
     const locationCell = document.createElement("td");
-    locationCell.textContent = vehicle.current_location;
+    locationCell.innerHTML = vehicle.current_location;
 
     // Create action cell
     const actionCell = document.createElement("td");
 
+    // if status is damaged, add repair button
     if (vehicle.status_name === "damaged") {
       const repairBtn = document.createElement("button");
       repairBtn.className = "btn btn-outline-secondary btn-sm";
       repairBtn.textContent = "Repair";
-      repairBtn.onclick = () => {
-        window.location.href = "operator_repair.html";
+      repairBtn.onclick = async () => {
+        const repairModal = new bootstrap.Modal(
+          document.getElementById("repairModal")
+        );
+        repairModal.show();
+        document.getElementById("confirmRepairBtn").onclick = async () => {
+          try {
+            confirmRepair(vehicle.id);
+            repairModal.hide();
+          } catch (error) {
+            console.error(error);
+          }
+        };
       };
       actionCell.appendChild(repairBtn);
+    }
+    // if status is repairing, add finish repair button
+    if (vehicle.status_name === "repairing") {
+      const finishRepairBtn = document.createElement("button");
+      finishRepairBtn.className = "btn btn-outline-secondary btn-sm";
+      finishRepairBtn.textContent = "Finish Repair";
+      finishRepairBtn.onclick = () => {
+        const finishRepairModal = new bootstrap.Modal(
+          document.getElementById("finishRepairModal")
+        );
+        finishRepairModal.show();
+        document.getElementById("confirmFinishRepairBtn").onclick = () => {
+          try {
+            confirmFinishRepair(vehicle.id);
+            finishRepairModal.hide();
+          } catch (error) {
+            console.error(error);
+          }
+        };
+      };
+      actionCell.appendChild(finishRepairBtn);
+    }
+    // if status is charging, add finish charge button
+    if (vehicle.status_name === "charging") {
+      const finishChargeBtn = document.createElement("button");
+      finishChargeBtn.className = "btn btn-outline-secondary btn-sm";
+      finishChargeBtn.textContent = "Finish Charge";
+      finishChargeBtn.onclick = () => {
+        const finishChargeModal = new bootstrap.Modal(
+          document.getElementById("finishChargeModal")
+        );
+        finishChargeModal.show();
+        finishChargeModal.show();
+        document.getElementById("confirmFinishChargeBtn").onclick = () => {
+          try {
+            confirmFinishCharge(vehicle.id);
+            finishChargeModal.hide();
+          } catch (error) {
+            console.error(error);
+          }
+        };
+      };
+      actionCell.appendChild(finishChargeBtn);
     }
 
     const chargeBtn = document.createElement("button");
     chargeBtn.className = "btn btn-outline-secondary btn-sm";
     chargeBtn.textContent = "Charge";
     chargeBtn.onclick = () => {
-      window.location.href = "operator_charge.html";
+      const chargeModal = new bootstrap.Modal(
+        document.getElementById("chargeModal")
+      );
+      chargeModal.show();
+      document.getElementById("confirmChargeBtn").onclick = () => {
+        try {
+          confirmCharge(vehicle.id);
+          chargeModal.hide();
+        } catch (error) {
+          console.error(error);
+        }
+      };
     };
 
-    const moveBtn = document.createElement("button");
-    moveBtn.className = "btn btn-outline-secondary btn-sm";
-    moveBtn.textContent = "Move";
-    moveBtn.onclick = () => {
-      window.location.href = "operator_move.html";
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn btn-outline-danger btn-sm";
+    deleteBtn.textContent = "delete";
+    deleteBtn.onclick = async () => {
+      var deleteModal = new bootstrap.Modal(
+        document.getElementById("deleteModal")
+      );
+      deleteModal.show();
+      document.getElementById("confirmDeleteBtn").onclick = async () => {
+        try {
+          console.log("Deleting vehicle:", vehicle);
+          const data = await fetchWithToken(vehicles_url + "/" + vehicle.id, {
+            method: "DELETE",
+          });
+          // console.log("Deleted vehicle:", data);
+          alert(data["message"]);
+          await loadVehicleData();
+          bootstrap.Modal.getInstance(
+            document.getElementById("deleteModal")
+          ).hide();
+
+          // await loadVehicleData;
+        } catch (error) {
+          console.error("Error:", error);
+          alert(error);
+        }
+      };
     };
 
     actionCell.appendChild(chargeBtn);
-    actionCell.appendChild(moveBtn);
+    actionCell.appendChild(deleteBtn);
 
     // Append cells to the row
+    row.appendChild(idCell);
     row.appendChild(imgCell);
     row.appendChild(modelCell);
     row.appendChild(statusCell);

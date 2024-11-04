@@ -16,26 +16,44 @@ export async function fetchWithToken(url, options = {}) {
   // }
 
   try {
-    // 使用 fetch 发送请求，将 headers 添加到 options 中
+    // Send the request using fetch and include headers
     const response = await fetch(url, {
       ...options,
       headers: headers,
     });
 
-    // 检查响应状态
+    let responseData;
+
+    // Check if the response has JSON content
+    const contentType = response.headers.get("Content-Type");
+    // console.log(response);
+    if (contentType && contentType.includes("application/json")) {
+      responseData = await response.json();
+    } else {
+      responseData = await response.text();
+    }
+    // console.log(responseData);
+    // If the response is not OK, throw an error with the response data
     if (!response.ok) {
-      alert("Response is not OK1");
-      console.log("response", response);
-      console.log("response", await response.json());
-      console.log("response", await response.text());
-      throw new Error("Response is not OK");
+      console.error("Error response data:", responseData);
+      const error = new Error("Request failed with status " + response.status);
+      error.response = response;
+      error.responseData = responseData;
+      throw error;
     }
 
-    // 返回解析后的 JSON 数据
-    return await response.json();
+    // Return the parsed response data
+    return responseData;
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred. Please try again later1.");
+
+    // Handle and display the error message from the backend
+    if (error.responseData) {
+      alert("An error occurred: " + JSON.stringify(error.responseData));
+    } else {
+      alert("An error occurred: " + error.message);
+    }
+
     throw error;
   }
 }
